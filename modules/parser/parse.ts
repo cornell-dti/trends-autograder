@@ -16,7 +16,7 @@ const successRegex = /(\d+) pass/;
  * Looking for a substring of the form:
  * SyntaxError: ...
  */
-const syntaxErrorRegex = /SyntaxError: /;
+const syntaxError = "SyntaxError:";
 
 /**
  * Returns a grade from 0 to 100 based on the number of failed tests.
@@ -58,7 +58,7 @@ const parse = (input: string) => {
             parseSubstring(getSubstring(successRegex)(input))
         );
     } catch (e) {
-        if (input.match(syntaxErrorRegex)) {
+        if (input.includes(syntaxError)) {
             return defaultGradeIfSyntaxError;
         }
         return lowestPossibleGrade;
