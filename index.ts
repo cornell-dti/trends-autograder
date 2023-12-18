@@ -86,6 +86,8 @@ const run = async ([assignmentNum, criticalFile, netIDs]: [
 
     console.log("Done running tests.");
 
+    console.log("Grades:", grades);
+
     await write(grades);
 
     console.log("Done!");

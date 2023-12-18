@@ -67,6 +67,8 @@ self.onmessage = async (event: MessageEvent) => {
 
             const grade = parse(logs);
 
+            console.log("Worker " + netID + " got grade " + grade);
+
             postMessage({ netID, grade });
         }
     );
