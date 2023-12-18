@@ -14,10 +14,6 @@ export const criticalFiles: {
     A4: "src/components/Gallery.tsx",
 };
 
-export const tempFolder = "tmp/";
-
-export const submissionsFolder = "Submissions/";
-
 export const defaultGradeIfSyntaxError = 70;
 
 export const lowestPossibleGrade = 70;
