@@ -59,7 +59,6 @@ self.onmessage = async (event: MessageEvent) => {
             if (error) {
                 console.log(`Worker ${netID} error: ` + error.message);
                 postMessage({ error: error.message });
-                return;
             }
 
             const logs = stdout + stderr;
