@@ -32,6 +32,13 @@ Run `make test` to run the autograder on the test cases.
 
 8. Afterwards, please run `make clean` to clean up.
 
+## Known Bugs
+
+Somewhere, somehow, there is a race condition. Pain.
+
+If the console doesn't read `Done!` at the end, and there is no `cms.csv`, try running `make clean` and then `make` again. Sorry :/
+
 ## Roadmap
 
 -   [ ] Add more tests.
+-   [ ] Fix the godforsaken race condition.
