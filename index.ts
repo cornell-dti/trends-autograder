@@ -67,12 +67,16 @@ const run = async ([assignmentNum, criticalFile, netIDs]: [
                 };
 
                 worker.onerror = (event: ErrorEvent) => {
-                    console.error(event);
+                    console.log(event);
                 };
             })
     );
 
+    console.log("Running tests...");
+
     await Promise.all(workerPromises);
+
+    console.log("Done running tests.");
 
     await write(grades);
 };
@@ -82,6 +86,8 @@ const run = async ([assignmentNum, criticalFile, netIDs]: [
  * @param grades An object mapping netIDs to grades.
  */
 const write = async (grades: { [netID: string]: number }) => {
+    console.log("Writing grades to CSV file...");
+
     const csv = new Blob(
         [
             "NetID,A1,Total,Adjustments,Add Comments\n",
@@ -97,4 +103,5 @@ const write = async (grades: { [netID: string]: number }) => {
     console.log("Done!");
 };
 
+// Entry point
 await prompt(init);
