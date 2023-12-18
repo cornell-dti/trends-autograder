@@ -1,6 +1,6 @@
 import { criticalFiles } from "./modules/constants";
 import { tokenize } from "./modules/helpers";
-import { OutputtedGrades } from "./modules/worker";
+import { OutputtedData } from "./modules/worker";
 
 /**
  * Prompts the user for an assignment number; sets up the file system.
@@ -61,24 +61,36 @@ const run = async ([assignmentNum, criticalFile, netIDs]: [
 
                 worker.postMessage({ assignmentNum, criticalFile, netID });
                 worker.onmessage = (event: MessageEvent) => {
-                    const { netID, grade }: OutputtedGrades = event.data;
-                    grades[netID] = grade;
-                    resolve();
+                    const res: OutputtedData = event.data;
+                    if (res.state === "failure") {
+                        console.error(res.error);
+                        worker.terminate();
+                        reject(new Error(res.error));
+                    } else {
+                        grades[res.netID] = res.grade;
+                        resolve();
+                    }
                 };
 
                 worker.onerror = (event: ErrorEvent) => {
-                    console.log(event);
+                    console.error("Worker error:", event.message);
+                    worker.terminate();
+                    reject(new Error("Worker error: " + event.message));
                 };
             })
     );
 
     console.log("Running tests...");
 
-    await Promise.all(workerPromises);
+    await Promise.allSettled(workerPromises);
 
     console.log("Done running tests.");
 
     await write(grades);
+
+    console.log("Done!");
+
+    return;
 };
 
 /**
@@ -98,9 +110,7 @@ const write = async (grades: { [netID: string]: number }) => {
         { type: "text/csv" }
     );
 
-    Bun.write("cms.csv", csv);
-
-    console.log("Done!");
+    await Bun.write("cms.csv", csv);
 };
 
 // Entry point
