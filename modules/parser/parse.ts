@@ -1,5 +1,3 @@
-import { defaultGradeIfSyntaxError, lowestPossibleGrade } from "../constants";
-
 /**
  * Looking for a substring of the form:
  * 22 fail
@@ -58,10 +56,7 @@ const parse = (input: string) => {
             parseSubstring(getSubstring(successRegex)(input))
         );
     } catch (e) {
-        if (input.includes(syntaxError)) {
-            return defaultGradeIfSyntaxError;
-        }
-        return lowestPossibleGrade;
+        return 0;
     }
 };
 

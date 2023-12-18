@@ -13,7 +13,3 @@ export const criticalFiles: {
     A3: "src/Paginator.tsx",
     A4: "src/components/Gallery.tsx",
 };
-
-export const defaultGradeIfSyntaxError = 70;
-
-export const lowestPossibleGrade = 70;
