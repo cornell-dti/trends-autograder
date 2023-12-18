@@ -1,5 +1,5 @@
 import { criticalFiles } from "./modules/constants";
-import { tokenize } from "./modules/helpers";
+import { removeUndefinedEntries, tokenize } from "./modules/helpers";
 import { OutputtedData } from "./modules/worker";
 
 /**
@@ -25,6 +25,8 @@ const prompt = async (spawn: (num: number) => Promise<void>) => {
  * @param num The assignment number.
  */
 const init = async (num: number) => {
+    console.log("Initializing...");
+
     const assignmentNumber = `A${num}`;
     const criticalFile = criticalFiles[assignmentNumber];
 
@@ -45,6 +47,26 @@ const init = async (num: number) => {
 };
 
 /**
+ * Writes the grades to a CSV file and ends the program.
+ * @param grades An object mapping netIDs to grades.
+ */
+const write = async (grades: { [netID: string]: number }) => {
+    console.log("Writing grades to CSV file...");
+
+    const csv = new Blob(
+        [
+            "NetID,A1,Total,Adjustments,Add Comments\n",
+            ...Object.entries(grades)
+                .sort(([netID1], [netID2]) => netID1.localeCompare(netID2))
+                .map(([netID, grade]) => `${netID},${grade},${grade},,\n`),
+        ],
+        { type: "text/csv" }
+    );
+
+    await Bun.write("cms.csv", csv);
+};
+
+/**
  * Runs the program.
  * - Creates web workers for each student for parallel processing.
  * - Calls `write` to write the grades to a CSV file.
@@ -55,7 +77,7 @@ const run = async ([assignmentNum, criticalFile, netIDs]: [
     string,
     string[]
 ]) => {
-    const grades: { [netID: string]: number } = {};
+    let grades: { [netID: string]: number } = {};
 
     const workerPromises = netIDs.map(
         (netID) =>
@@ -85,11 +107,17 @@ const run = async ([assignmentNum, criticalFile, netIDs]: [
             })
     );
 
-    console.log("Running tests...");
+    console.log("Running workers...");
 
-    await Promise.all(workerPromises);
+    await Promise.allSettled(workerPromises);
 
-    console.log("Done running tests.");
+    // ADJUSTMENTS
+    // arbitrarily wait 3 seconds to make sure all workers have terminated (there's usually one hanging behind)
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // remove undefined entries (the one hanging behind pushes [undefined, undefined] to the object)
+    removeUndefinedEntries(grades);
+
+    console.log("Done running workers.");
 
     console.log("Grades:", grades);
 
@@ -98,26 +126,6 @@ const run = async ([assignmentNum, criticalFile, netIDs]: [
     console.log("Done!");
 
     return;
-};
-
-/**
- * Writes the grades to a CSV file and ends the program.
- * @param grades An object mapping netIDs to grades.
- */
-const write = async (grades: { [netID: string]: number }) => {
-    console.log("Writing grades to CSV file...");
-
-    const csv = new Blob(
-        [
-            "NetID,A1,Total,Adjustments,Add Comments\n",
-            ...Object.entries(grades).map(
-                ([netID, grade]) => `${netID},${grade},${grade},,\n`
-            ),
-        ],
-        { type: "text/csv" }
-    );
-
-    await Bun.write("cms.csv", csv);
 };
 
 // Entry point

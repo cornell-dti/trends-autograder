@@ -24,6 +24,8 @@ export type OutputtedData =
 self.onmessage = async (event: MessageEvent) => {
     const { assignmentNum, criticalFile, netID }: Data = event.data;
 
+    console.log("Worker " + netID + " started.");
+
     try {
         // copy contents of solutions/[assignmentNum] to inside tmp/[netID]
         const first = Bun.spawn([
