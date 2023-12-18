@@ -1,0 +1,14 @@
+{
+  "name": "trends-autograder",
+  "module": "index.ts",
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "type": "module",
+  "dependencies": {
+    "effect": "2.0.0-next.61"
+  }
+}
