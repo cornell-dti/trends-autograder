@@ -31,6 +31,11 @@ const init = async (num: number) => {
     const proc = Bun.spawn(["mkdir", "tmp"]);
     await proc.exited;
 
+    await Bun.write(
+        "cms.csv",
+        `NetID,${assignmentNumber},Total,Adjustments,Add Comments`
+    );
+
     const { stdout, stderr, exited } = Bun.spawn(["ls", "Submissions"]);
     await exited;
     const stdoutStr = await new Response(stdout).text();
@@ -82,7 +87,7 @@ const run = async ([assignmentNum, criticalFile, netIDs]: [
 
     console.log("Running tests...");
 
-    await Promise.allSettled(workerPromises);
+    await Promise.all(workerPromises);
 
     console.log("Done running tests.");
 
