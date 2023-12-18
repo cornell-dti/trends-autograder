@@ -2,7 +2,6 @@
 declare var self: Worker;
 
 import parse from "./parser/parse";
-import { Effect } from "effect";
 const { exec } = require("child_process");
 
 export type Data = {
@@ -16,20 +15,8 @@ export type OutputtedGrades = {
     grade: number;
 };
 
-/*
-- Create the directory /tmp/[NetID].
- *    - Copy the contents of the answer repo into the temporary directory /tmp/[NetID]: pnpm dlx degit cornell-dti/trends-mono/frontend-hw-${assignmentNumber}-solution tmp/${NetID}
- *    - Copy the student's critical file (which should be the only file in the submission folder) into the temporary directory /tmp/[NetID] (overwriting the answer repo's critical file).
- *    - Run `pnpm install` in the temporary directory /tmp/[NetID]
- *    - Run `yes q | pnpm test` in the temporary directory /tmp/[NetID] and save the output as `output`.
- *    - Invoke the parser module with `output` as the argument and save the result as `grade`.
- *    - Append the mapping of `NetID` to `grade` to `OutputtedGrades`.
-*/
-
 self.onmessage = async (event: MessageEvent) => {
     const { assignmentNum, criticalFile, netID }: Data = event.data;
-
-    console.log(`Worker ${netID} started`);
 
     // copy contents of solutions/[assignmentNum] to inside tmp/[netID]
     const first = Bun.spawn([
@@ -40,6 +27,7 @@ self.onmessage = async (event: MessageEvent) => {
     ]);
     await first.exited;
 
+    // copy critical file to tmp/[netID]
     const second = Bun.spawn([
         `cp`,
         `Submissions/${netID}/${criticalFile}`,
@@ -47,18 +35,16 @@ self.onmessage = async (event: MessageEvent) => {
     ]);
     await second.exited;
 
+    // run `bun install` in tmp/[netID]
     const third = Bun.spawn([`bun`, `install`], {
         cwd: `tmp/${netID}`,
     });
     await third.exited;
 
-    console.log(`Worker ${netID} finished setup`);
-
+    // run `bun test .` in tmp/[netID] and parse the output, posting it back to the main thread
     exec(
         `cd tmp/${netID} && bun test .`,
         async (error: any, stdout: string, stderr: string) => {
-            console.log(`Worker ${netID} finishing test`);
-
             if (error) {
                 console.log(`Worker ${netID} error: ` + error.message);
             }
@@ -68,8 +54,6 @@ self.onmessage = async (event: MessageEvent) => {
             await Bun.write(`tmp/${netID}/logs.txt`, logs);
 
             const grade = parse(logs);
-
-            console.log(`Worker ${netID} got grade: ` + grade);
 
             postMessage({ netID, grade });
 
