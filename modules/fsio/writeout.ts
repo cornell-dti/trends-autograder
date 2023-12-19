@@ -1,22 +1,20 @@
 import { Effect } from "effect";
 
-export type Gradebook = { [netID: string]: number };
+export type Gradebook = (readonly [string, number])[];
 
-const write = async (grades: Gradebook) => {
-    console.log("Writing grades to CSV file...");
-
-    const csv = new Blob(
-        [
-            "NetID,A1,Total,Adjustments,Add Comments\n",
-            ...Object.entries(grades)
-                .sort(([netID1], [netID2]) => netID1.localeCompare(netID2))
-                .map(([netID, grade]) => `${netID},${grade},${grade},,\n`),
-        ],
-        { type: "text/csv" }
+const write = async (grades: Gradebook) =>
+    await Bun.write(
+        "cms.csv",
+        new Blob(
+            [
+                "NetID,A1,Total,Adjustments,Add Comments\n",
+                ...grades.map(
+                    ([netID, grade]) => `${netID},${grade},${grade},,\n`
+                ),
+            ],
+            { type: "text/csv" }
+        )
     );
-
-    await Bun.write("cms.csv", csv);
-};
 
 /**
  * Writes the grades to a CSV file.

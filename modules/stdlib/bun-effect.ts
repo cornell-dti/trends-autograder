@@ -1,6 +1,6 @@
 /**
  * @module stdlib/bun-effect
- * Aims to provide a functional, Effect-ful interface for some standard Bun operations.
+ * Aims to provide a bridge from the Bun API to a functional, Effect-ful interface.
  */
 
 import { Effect } from "effect";
@@ -28,8 +28,11 @@ export const bunReadLine = () =>
 /**
  * Execute a command.
  */
-const exec = async (command: string[]) => {
-    const proc = Bun.spawn(command);
+const exec = async (command: string[], containingDir: string | undefined) => {
+    const proc =
+        containingDir === undefined
+            ? Bun.spawn(command)
+            : Bun.spawn(command, { cwd: containingDir });
     await proc.exited;
 
     const { stdout, stderr, exited } = proc;
@@ -44,8 +47,8 @@ const exec = async (command: string[]) => {
  * @param command A command.
  * @returns An Effect that resolves once the command has exited.
  */
-export const bunExec = (command: string[]) =>
-    Effect.promise(() => exec(command));
+export const bunExec = (command: string[], containingDir?: string) =>
+    Effect.promise(() => exec(command, containingDir));
 
 /**
  * Write to a file.
