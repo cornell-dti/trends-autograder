@@ -6,7 +6,7 @@ const basePlus = (file: string) => `modules/parser/test-logs/${file}`;
 
 describe("Parsing", () => {
     test("A1", async () => {
-        // Should be 1 failed
+        // Should be 1 failed out of 27 total
         const testInput = await Bun.file(basePlus("A1.txt")).text();
         const res = Effect.runSync(parse(testInput));
         expect(res).toBe(96);
