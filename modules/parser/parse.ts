@@ -37,6 +37,8 @@ const getSubstring = (regex: RegExp) => (str: string) => {
 /**
  * Parses a substring that already matched the regex,
  * and returns the number of failed/succeeded tests.
+ * @param str The substring to parse. Precondition: it must match the regex.
+ * @returns The number of failed/succeeded tests.
  */
 const parseSubstring = (str: string) =>
     Effect.succeed(parseInt(str.split(" ")[0]));
@@ -44,7 +46,7 @@ const parseSubstring = (str: string) =>
 /**
  * Parses some test output for a resulting grade.
  * @param input A string containing the output of `pnpm test`, which could be VERY long.
- * @returns A grade from 0 to 100, or -1 if the input is invalid.
+ * @returns A grade from 0 to 100.
  */
 const parse = (input: string) =>
     pipe(

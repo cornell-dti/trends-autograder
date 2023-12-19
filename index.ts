@@ -1,70 +1,32 @@
+import { Effect, Match } from "effect";
 import { criticalFiles } from "./modules/constants";
-import { removeUndefinedEntries, tokenize } from "./modules/helpers";
+import { removeUndefinedEntries, tokenize } from "./modules/stdlib/fns";
 import { OutputtedData } from "./modules/worker";
+import {
+    bunExec,
+    bunLs,
+    bunReadLine,
+    bunWrite,
+} from "./modules/stdlib/bun-effect";
+import promptAssignmentNumber from "./modules/fsio/prompt";
+import createTmpDirAndCsvFile from "./modules/fsio/tmpcsv";
+import { writeGrades } from "./modules/fsio/writeout";
 
 /**
- * Prompts the user for an assignment number; sets up the file system.
- * @param spawn A callback function to start the program once everything is setup.
- * @returns A promise that resolves once the user has entered a valid assignment number.
+ * Initializes filesystem, returns critical variables.
  */
-const prompt = async (spawn: (num: number) => Promise<void>) => {
-    process.stdout.write("Enter assignment number (1-4): ");
-    for await (const line of console) {
-        const assignmentNumber = parseInt(line);
-        if (assignmentNumber >= 1 && assignmentNumber <= 4) {
-            await spawn(assignmentNumber);
-            return;
-        } else {
-            throw new Error("Invalid assignment number");
-        }
-    }
-};
+const init = () =>
+    Effect.gen(function* ($) {
+        const num = yield* $(promptAssignmentNumber());
 
-/**
- * Initializes relevant variables to their proper values and calls `run`.
- * @param num The assignment number.
- */
-const init = async (num: number) => {
-    console.log("Initializing...");
+        const assignmentNumber = `A${num}`;
+        const criticalFile = criticalFiles[assignmentNumber];
+        const netIDs = bunLs("Submissions");
 
-    const assignmentNumber = `A${num}`;
-    const criticalFile = criticalFiles[assignmentNumber];
+        yield* $(createTmpDirAndCsvFile(assignmentNumber));
 
-    const proc = Bun.spawn(["mkdir", "tmp"]);
-    await proc.exited;
-
-    await Bun.write(
-        "cms.csv",
-        `NetID,${assignmentNumber},Total,Adjustments,Add Comments`
-    );
-
-    const { stdout, stderr, exited } = Bun.spawn(["ls", "Submissions"]);
-    await exited;
-    const stdoutStr = await new Response(stdout).text();
-    const netIDs = tokenize(stdoutStr);
-
-    run([assignmentNumber, criticalFile, netIDs]);
-};
-
-/**
- * Writes the grades to a CSV file and ends the program.
- * @param grades An object mapping netIDs to grades.
- */
-const write = async (grades: { [netID: string]: number }) => {
-    console.log("Writing grades to CSV file...");
-
-    const csv = new Blob(
-        [
-            "NetID,A1,Total,Adjustments,Add Comments\n",
-            ...Object.entries(grades)
-                .sort(([netID1], [netID2]) => netID1.localeCompare(netID2))
-                .map(([netID, grade]) => `${netID},${grade},${grade},,\n`),
-        ],
-        { type: "text/csv" }
-    );
-
-    await Bun.write("cms.csv", csv);
-};
+        return [assignmentNumber, criticalFile, netIDs] as const;
+    });
 
 /**
  * Runs the program.
@@ -121,7 +83,7 @@ const run = async ([assignmentNum, criticalFile, netIDs]: [
 
     console.log("Grades:", grades);
 
-    await write(grades);
+    await writeGrades(grades);
 
     console.log("Done!");
 
@@ -129,4 +91,3 @@ const run = async ([assignmentNum, criticalFile, netIDs]: [
 };
 
 // Entry point
-await prompt(init);

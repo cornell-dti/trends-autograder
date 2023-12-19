@@ -25,8 +25,6 @@ export type OutputtedData =
 self.onmessage = async (event: MessageEvent) => {
     const { assignmentNum, criticalFile, netID }: Data = event.data;
 
-    console.log("Worker " + netID + " started.");
-
     try {
         // copy contents of solutions/[assignmentNum] to inside tmp/[netID]
         const first = Bun.spawn([
@@ -60,17 +58,13 @@ self.onmessage = async (event: MessageEvent) => {
         `cd tmp/${netID} && bun test .`,
         async (error: any, stdout: string, stderr: string) => {
             if (error) {
-                console.log(`Worker ${netID} error: ` + error.message);
                 postMessage({ error: error.message });
             }
 
             const logs = stdout + stderr;
-
             await Bun.write(`tmp/${netID}/logs.txt`, logs);
 
             const grade = Effect.runSync(parse(logs));
-
-            console.log("Worker " + netID + " got grade " + grade);
 
             postMessage({ netID, grade });
         }
