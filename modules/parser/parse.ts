@@ -26,14 +26,13 @@ const calculateGrade = (failed: number) => (succeeded: number) =>
  * @param str The string to match against.
  * @returns The substring of `str` that matches `regex`.
  */
-const getSubstring = (regex: RegExp, str: string) =>
-    Effect.gen(function* ($) {
-        const match = str.match(regex);
-        if (match === null) {
-            return yield* $(Effect.fail("No match"));
-        }
-        return yield* $(Effect.succeed(match[0]));
-    });
+const getSubstring = (regex: RegExp, str: string) => {
+    const match = str.match(regex);
+    return Match.type<RegExpMatchArray | null>().pipe(
+        Match.when(null, () => Effect.fail("No match")),
+        Match.orElse(() => Effect.succeed(match![0]))
+    )(match);
+};
 
 /**
  * Parses a substring that already matched the regex,
