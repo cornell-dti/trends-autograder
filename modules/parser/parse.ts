@@ -1,63 +1,34 @@
-/**
- * Looking for a substring of the form:
- * 22 fail
- */
-const failureRegex = /(\d+) fail/;
+import { Effect, Match, pipe } from "effect";
+import { z } from "zod";
+import JsonStrToObj from "../stdlib/json";
 
 /**
- * Looking for a substring of the form:
- * 25 pass
+ * Our desired schema for the JSON log we're reading.
  */
-const successRegex = /(\d+) pass/;
+const TestObjSchema = z.object({
+    numTotalTests: z.number(),
+    numPassedTests: z.number(),
+    numFailedTests: z.number(),
+    numPendingTests: z.number(),
+});
 
 /**
- * Looking for a substring of the form:
- * SyntaxError: ...
+ * The schema's corresponding TypeScript type.
  */
-const syntaxError = "SyntaxError:";
+export type TestObj = z.infer<typeof TestObjSchema>;
 
 /**
- * Returns a grade from 0 to 100 based on the number of failed tests.
- * @param arr The number of failed tests.
- * @returns A grade from 0 to 100.
+ * Given a TestObj, calculate the grade.
  */
-const calculateGrade = (failed: number) => (succeeded: number) =>
-    Math.round((succeeded / (failed + succeeded)) * 100);
+const calcGrade = (obj: TestObj) =>
+    Effect.succeed(Math.round(100 * (obj.numPassedTests / obj.numTotalTests)));
 
 /**
- * Gets the substring of a string that matches a regular expression.
- * @param regex The regular expression to match.
- * @param str The string to match against.
- * @returns The substring of `str` that matches `regex`.
+ * Given a JSON string, parse it into a TestObj and calculate the grade.
+ * @param json The JSON string to parse.
+ * @returns The grade, between 0 and 100.
  */
-const getSubstring = (regex: RegExp) => (str: string) => {
-    const match = str.match(regex);
-    if (match === null) throw new Error("No regex match found: " + str);
-    else return match[0];
-};
-
-/**
- * Parses a substring that already matched the regex,
- * and returns the number of failed/succeeded tests.
- */
-const parseSubstring = (str: string) => parseInt(str.split(" ")[0]);
-
-/**
- * Parses some test output for a resulting grade.
- * @param input A string containing the output of `pnpm test`, which could be VERY long.
- * @returns A grade from 0 to 100, or -1 if the input is invalid.
- */
-const parse = (input: string) => {
-    try {
-        // prettier-ignore
-        return calculateGrade(
-            parseSubstring(getSubstring(failureRegex)(input))
-        )(
-            parseSubstring(getSubstring(successRegex)(input))
-        );
-    } catch (e) {
-        return 0;
-    }
-};
+const parse = (json: string) =>
+    pipe(json, JsonStrToObj(TestObjSchema), Effect.flatMap(calcGrade));
 
 export default parse;
