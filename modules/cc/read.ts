@@ -1,7 +1,7 @@
 import { Effect, Either, Option, pipe } from "effect";
 import { bunReadFile } from "../stdlib/bun-effect";
 import parse from "../parser/parse";
-import { ERROR } from "../constants";
+import { ERROR, TMP_DIR } from "../constants";
 
 /**
  * Constructs a single fiber that reads the logs for a student to calculate their grade and returns it.
@@ -11,7 +11,7 @@ import { ERROR } from "../constants";
 const readLogs = (netID: string) =>
     Effect.gen(function* ($) {
         const logs = yield* $(
-            Effect.either(bunReadFile(`tmp/${netID}/logs.json`))
+            Effect.either(bunReadFile(`${TMP_DIR}/${netID}/logs.json`))
         );
 
         return Either.isLeft(logs)

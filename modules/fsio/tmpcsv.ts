@@ -1,5 +1,6 @@
 import { Effect } from "effect";
 import { bunExec, bunWrite } from "../stdlib/bun-effect";
+import { OUTPUT_FILE, TMP_DIR } from "../constants";
 
 /**
  * Create tmp directory and cms.csv file.
@@ -8,10 +9,10 @@ import { bunExec, bunWrite } from "../stdlib/bun-effect";
  */
 const createTmpDirAndCsvFile = (assignmentNumber: string) =>
     Effect.gen(function* ($) {
-        yield* $(bunExec(["mkdir", "tmp"]));
+        yield* $(bunExec(["mkdir", TMP_DIR]));
         yield* $(
             bunWrite(
-                "cms.csv",
+                OUTPUT_FILE,
                 `NetID,${assignmentNumber},Total,Adjustments,Add Comments`
             )
         );

@@ -1,5 +1,6 @@
 import { Effect } from "effect";
 import { bunExec } from "../stdlib/bun-effect";
+import { SOLUTIONS_DIR, SUBMISSIONS_DIR, TMP_DIR } from "../constants";
 
 type DataIn = {
     assignmentNum: string;
@@ -19,14 +20,19 @@ const writeLogs = (data: DataIn) =>
         // Copy critical files
 
         yield* $(
-            bunExec(["cp", "-r", `solutions/${assignmentNum}/`, `tmp/${netID}`])
+            bunExec([
+                "cp",
+                "-r",
+                `${SOLUTIONS_DIR}/${assignmentNum}/`,
+                `${TMP_DIR}/${netID}`,
+            ])
         );
 
         yield* $(
             bunExec([
                 "cp",
-                `Submissions/${netID}/${criticalFile}`,
-                `tmp/${netID}/${criticalFile}`,
+                `${SUBMISSIONS_DIR}/${netID}/${criticalFile}`,
+                `${TMP_DIR}/${netID}/${criticalFile}`,
             ])
         );
 
@@ -34,7 +40,7 @@ const writeLogs = (data: DataIn) =>
 
         yield* $(
             bunExec(["pnpm", "install"], {
-                cwd: `tmp/${netID}`,
+                cwd: `${TMP_DIR}/${netID}`,
             })
         );
 
@@ -51,7 +57,7 @@ const writeLogs = (data: DataIn) =>
                     "--outputFile=./logs.json",
                 ],
                 {
-                    cwd: `tmp/${netID}`,
+                    cwd: `${TMP_DIR}/${netID}`,
                 }
             )
         );

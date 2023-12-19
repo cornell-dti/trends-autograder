@@ -1,10 +1,11 @@
 import { Effect } from "effect";
+import { OUTPUT_FILE } from "../constants";
 
 export type Gradebook = (readonly [string, string])[];
 
 const write = async (grades: Gradebook) =>
     await Bun.write(
-        "cms.csv",
+        OUTPUT_FILE,
         new Blob(
             [
                 "NetID,A1,Total,Adjustments,Add Comments\n",

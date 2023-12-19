@@ -3,7 +3,7 @@
  * Aims to provide a bridge from the Bun API to a functional, Effect-ful interface.
  */
 
-import { Effect, Option } from "effect";
+import { Effect } from "effect";
 import { tokenize } from "./fns";
 
 /**
@@ -41,7 +41,7 @@ type BunSpawnParams =
 const exec = async (command: string[], params: BunSpawnParams) => {
     const proc = Bun.spawn(command, params);
 
-    const { stdout, stderr, exited } = proc;
+    const { stdout, stderr } = proc;
 
     const consoleOutput = await new Response(stdout).text();
     const consoleErrors = await new Response(stderr).text();
@@ -84,11 +84,6 @@ export const bunLs = (directory: string) =>
     Effect.gen(function* ($) {
         const res = yield* $(bunExec(["ls", directory]));
         return tokenize(res[0]);
-        // TODO
-        // return Option.match(res, {
-        //     onNone: () => [],
-        //     onSome: ([stdout, _]) => tokenize(stdout),
-        // });
     });
 
 /**

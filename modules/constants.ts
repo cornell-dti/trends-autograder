@@ -30,3 +30,23 @@ export const maxTimeout = "30 seconds";
  * Indicates you should hand-grade those students.
  */
 export const ERROR = "ERROR";
+
+/**
+ * Output file name (should end in .csv)
+ */
+export const OUTPUT_FILE = "cms.csv";
+
+/**
+ * The directory where the student submissions are stored.
+ */
+export const SUBMISSIONS_DIR = "Submissions";
+
+/**
+ * The directory where the solutions are stored.
+ */
+export const SOLUTIONS_DIR = "solutions";
+
+/**
+ * The directory where the temporary build files are stored.
+ */
+export const TMP_DIR = "tmp";
