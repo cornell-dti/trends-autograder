@@ -1,6 +1,7 @@
 // prevents TS errors
 declare var self: Worker;
 
+import { Effect } from "effect";
 import parse from "./parser/parse";
 const { exec } = require("child_process");
 
@@ -67,7 +68,7 @@ self.onmessage = async (event: MessageEvent) => {
 
             await Bun.write(`tmp/${netID}/logs.txt`, logs);
 
-            const grade = parse(logs);
+            const grade = Effect.runSync(parse(logs));
 
             console.log("Worker " + netID + " got grade " + grade);
 
