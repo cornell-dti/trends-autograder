@@ -3,10 +3,8 @@
  * Aims to provide a bridge from the Bun API to a functional, Effect-ful interface.
  */
 
-import { Effect } from "effect";
+import { Effect, Option } from "effect";
 import { tokenize } from "./fns";
-import { promiseWithTimeout } from "./fns";
-import { maxCmdTimeout } from "../constants";
 
 /**
  * Get the first element of an async iterable.
@@ -45,18 +43,10 @@ const exec = async (command: string[], params: BunSpawnParams) => {
 
     const { stdout, stderr, exited } = proc;
 
-    const consoleOutput = await promiseWithTimeout(
-        new Response(stdout).text(),
-        maxCmdTimeout,
-        () => proc.unref()
-    );
-    const consoleErrors = await promiseWithTimeout(
-        new Response(stderr).text(),
-        maxCmdTimeout,
-        () => proc.unref()
-    );
+    const consoleOutput = await new Response(stdout).text();
+    const consoleErrors = await new Response(stderr).text();
 
-    await promiseWithTimeout(proc.exited, maxCmdTimeout, () => proc.unref());
+    await proc.exited;
 
     return [consoleOutput, consoleErrors] as const;
 };
@@ -92,8 +82,13 @@ export const bunWrite = (filename: string, contents: string | Blob) =>
  */
 export const bunLs = (directory: string) =>
     Effect.gen(function* ($) {
-        const [stdout, _] = yield* $(bunExec(["ls", directory]));
-        return tokenize(stdout);
+        const res = yield* $(bunExec(["ls", directory]));
+        return tokenize(res[0]);
+        // TODO
+        // return Option.match(res, {
+        //     onNone: () => [],
+        //     onSome: ([stdout, _]) => tokenize(stdout),
+        // });
     });
 
 /**
@@ -108,8 +103,13 @@ export const bunLog = (message: string) =>
  * Read a file.
  */
 const read = async (path: string) => {
-    const file = await Bun.file(path);
-    return await file.text();
+    try {
+        const file = Bun.file(path);
+        const contents = await file.text();
+        return contents;
+    } catch (e) {
+        throw new Error(`Bad Read: ${e}`);
+    }
 };
 
 /**
@@ -117,4 +117,8 @@ const read = async (path: string) => {
  * @param path A file path.
  * @returns An Effect that resolves to the contents of the file.
  */
-export const bunReadFile = (path: string) => Effect.promise(() => read(path));
+export const bunReadFile = (path: string) =>
+    Effect.tryPromise({
+        try: () => read(path),
+        catch: () => new Error(`Could not read file at path ${path}`),
+    });

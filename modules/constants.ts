@@ -21,6 +21,12 @@ export const criticalFiles: {
 };
 
 /**
- * No single execution of a shell command should take longer than this.
+ * No single effect should take longer than this.
  */
-export const maxCmdTimeout = 30000;
+export const maxTimeout = "50 seconds";
+
+/**
+ * Message to write into cms.csv for students who we had trouble auto-grading.
+ * Indicates you should hand-grade those students.
+ */
+export const ERROR = "ERROR";

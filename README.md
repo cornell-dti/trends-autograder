@@ -34,20 +34,14 @@ Make sure tests are passing before using this program!
 
 6. Run `make`. If all goes well, Trends-Autograder will produce `cms.csv` in root.
 
+    - If the system had trouble automatically grading any student, it will produce an "ERROR" in the `cms.csv` file next to their name. You will need to manually grade these students.
+
+    - If the system hangs after printing `Done!`, it's safe to hit Ctrl+C to kill the process.
+
 7. To upload scores to CMS, go to the bottom of the CMS page next to _Upload Scores_ and choose file `cms.csv`. Note that this will potentially overwrite past uploads and should thus be done by DevLeads in the majority of cases.
 
 8. Afterwards, please run `make clean` to clean up.
 
-## Known Bugs
-
--   Somewhere, somehow, there is a race condition or something of that sort. Pain. As a result, there are two 'ADJUSTMENTS' in `index.ts`. If you find and fix it, I'll buy you a beer (not Modelo).
-
--   The process hangs even after finishing. As long as you see `Done!` as the last line on the console, it's safe to hit Ctrl+C or Cmd+C to kill the process.
-
 ## Future Work
 
 -   Add more tests.
--   Fix the known bugs.
--   Migrate the whole thing to using Functional paradigms..
-    -   Consider switching to [Rescript](https://rescript-lang.org/) or using [Effect](https://effect.website/).
-    -   Why? Much cleaner concurrent programming; much easier to reason about errors in failures to regex match and stuff like that. Would've made my life a lot easier.

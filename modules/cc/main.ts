@@ -1,6 +1,8 @@
 import { Effect, pipe } from "effect";
 import { writeGrades } from "../fsio/writeout";
-import makeFiber from "./fiber";
+import writeLogs from "./write";
+import { maxTimeout } from "../constants";
+import readLogs from "./read";
 
 /**
  * Runs all workloads in parallel, and then writes the grades to a CSV file.
@@ -13,11 +15,15 @@ import makeFiber from "./fiber";
 const runMain = 
   ([assignmentNum, criticalFile, netIDs]: readonly [string, string, string[]]) => 
     pipe(
-      Effect.all(
-        netIDs.map((netID) => makeFiber({ assignmentNum, criticalFile, netID })), 
+      Effect.succeed(netIDs),
+      Effect.tap((netIDs: string[]) => Effect.all(
+        netIDs.map((netID) => writeLogs({ assignmentNum, criticalFile, netID })), 
         { concurrency: "unbounded" }
-      ),
-      Effect.tap(() => console.log("Finished executing all fibers!")),
+      ).pipe(Effect.timeout(maxTimeout))),
+      Effect.flatMap((netIDs) => Effect.all(
+        netIDs.map((netID) => readLogs(netID)),
+        { concurrency: "unbounded" }
+      )),
       Effect.flatMap((grades) => writeGrades(grades))
     );
 

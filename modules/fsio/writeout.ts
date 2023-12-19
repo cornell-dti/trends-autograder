@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 
-export type Gradebook = (readonly [string, number])[];
+export type Gradebook = (readonly [string, string])[];
 
 const write = async (grades: Gradebook) =>
     await Bun.write(

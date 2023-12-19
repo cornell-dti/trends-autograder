@@ -1,23 +1,22 @@
 import { Effect } from "effect";
-import { bunExec, bunReadFile, bunWrite } from "../stdlib/bun-effect";
-import parse from "../parser/parse";
+import { bunExec } from "../stdlib/bun-effect";
 
-export type DataIn = {
+type DataIn = {
     assignmentNum: string;
     criticalFile: string;
     netID: string;
 };
 
 /**
- * Constructs a single fiber that runs the tests for a single student, calculates the grades, and returns the netID and grade as a tuple.
+ * Constructs a single fiber that runs the tests for a single student and writes the logs to a file.
  * @param data The data to use for the fiber.
  * @returns An Effect that resolves to a tuple of the netID and grade.
  */
-const makeFiber = (data: DataIn) =>
+const writeLogs = (data: DataIn) =>
     Effect.gen(function* ($) {
-        const { assignmentNum, criticalFile, netID } = data;
+        console.log(`Writing logs for ${data.netID}...`);
 
-        console.log(`Starting worker for ${netID}...`);
+        const { assignmentNum, criticalFile, netID } = data;
 
         // Copy critical files
 
@@ -35,15 +34,11 @@ const makeFiber = (data: DataIn) =>
 
         // Install dependencies
 
-        console.log(`Installing dependencies for ${netID}...`);
-
         yield* $(
             bunExec(["pnpm", "install"], {
                 cwd: `tmp/${netID}`,
             })
         );
-
-        console.log(`Running tests for ${netID}...`);
 
         // Run tests, save logs
 
@@ -63,21 +58,7 @@ const makeFiber = (data: DataIn) =>
             )
         );
 
-        // Parse logs, calculate grade
-
-        console.log(`Parsing logs for ${netID}...`);
-
-        const logs = yield* $(bunReadFile(`tmp/${netID}/logs.json`));
-
-        console.log(`Calculating grade for ${netID}...`);
-
-        const grade = yield* $(parse(logs));
-
-        console.log(`Grade for ${netID}: ${grade}`);
-
-        console.log(`Ending worker for ${netID}...`);
-
-        return [netID, grade] as const;
+        return `Logs for ${netID} successfully written.`;
     });
 
-export default makeFiber;
+export default writeLogs;
