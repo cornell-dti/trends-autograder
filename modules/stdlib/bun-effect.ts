@@ -26,18 +26,26 @@ export const bunReadLine = () =>
     Effect.promise<string | undefined>(() => getFirstElement(console));
 
 /**
+ * The configuration for spawning a Bun process.
+ */
+type BunSpawnParams =
+    | {
+          cwd?: string;
+          shell?: boolean;
+      }
+    | undefined;
+
+/**
  * Execute a command.
  */
-const exec = async (command: string[], containingDir: string | undefined) => {
-    const proc =
-        containingDir === undefined
-            ? Bun.spawn(command)
-            : Bun.spawn(command, { cwd: containingDir });
-    await proc.exited;
+const exec = async (command: string[], params: BunSpawnParams) => {
+    const proc = Bun.spawn(command, params);
 
     const { stdout, stderr, exited } = proc;
     const consoleOutput = await new Response(stdout).text();
     const consoleErrors = await new Response(stderr).text();
+
+    await proc.exited;
 
     return [consoleOutput, consoleErrors] as const;
 };
@@ -47,8 +55,8 @@ const exec = async (command: string[], containingDir: string | undefined) => {
  * @param command A command.
  * @returns An Effect that resolves once the command has exited.
  */
-export const bunExec = (command: string[], containingDir?: string) =>
-    Effect.promise(() => exec(command, containingDir));
+export const bunExec = (command: string[], params?: BunSpawnParams) =>
+    Effect.promise(() => exec(command, params));
 
 /**
  * Write to a file.

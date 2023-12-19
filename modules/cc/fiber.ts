@@ -23,10 +23,28 @@ const makeFiber = (data: DataIn) =>
         // prettier-ignore
         yield* $(bunExec(["cp", `Submissions/${netID}/${criticalFile}`, `tmp/${netID}/${criticalFile}`, ]));
         // prettier-ignore
-        yield* $(bunExec(["bun", "install"], `tmp/${netID}`));
+        yield* $(bunExec(["pnpm", "install"], {
+            cwd: `tmp/${netID}`,
+        }));
 
-        // prettier-ignore
-        const { stdout, stderr } = yield* $(nodeExec(`cd tmp/${netID} && bun test .`));
+        console.log(`BEFORE...`);
+
+        const [stdout, stderr] = yield* $(
+            bunExec(
+                [
+                    "pnpm",
+                    "test",
+                    "--",
+                    "--reporter=json",
+                    "--outputFile=./logs.json",
+                ],
+                {
+                    cwd: `tmp/${netID}`,
+                }
+            )
+        );
+
+        console.log(`AFTER...`);
 
         const logs = stdout + stderr;
 

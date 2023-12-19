@@ -12,6 +12,8 @@ Install [Bun](https://bun.sh/).
 
 Then, run `bun install` to install dependencies.
 
+Then, install [pnpm](https://pnpm.io/) if you don't already have it.
+
 ## Testing for Correctness
 
 Run `make test` to run the autograder on the test cases.
