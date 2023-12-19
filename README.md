@@ -2,9 +2,7 @@
 
 Trends-Autograder for A1-A4.
 
-Some inspiration (not much) taken from the Sphinx autograder for CS 3110.
-
-Original code by Daniel: 24-hour speed-run on 2023-12-17. Please report bugs and contribute!
+Written in a functional style, using [Effect](https://effect.website/), to handle concurrency and resource safety in a tidy manner. Refer to the Effect docs and the 3110 textbook as needed. Some inspiration (not much) taken from the Sphinx autograder for CS 3110.
 
 ## Initial Setup
 
