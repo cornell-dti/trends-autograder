@@ -8,7 +8,7 @@ import createTmpDirAndCsvFile from "./tmpcsv";
  * Initializes filesystem, returns critical variables.
  * @returns An Effect that resolves to a tuple of the assignment number, critical file, and netIDs.
  */
-const init = () =>
+const init = (_: unknown) =>
     Effect.gen(function* ($) {
         const num = yield* $(promptAssignmentNumber());
 
@@ -18,7 +18,7 @@ const init = () =>
 
         yield* $(createTmpDirAndCsvFile(assignmentNumber));
 
-        return [assignmentNumber, criticalFile, netIDs] as const;
+        return [netIDs, assignmentNumber, criticalFile] as const;
     });
 
 export default init;

@@ -14,8 +14,6 @@ type DataIn = {
  */
 const writeLogs = (data: DataIn) =>
     Effect.gen(function* ($) {
-        console.log(`Writing logs for ${data.netID}...`);
-
         const { assignmentNum, criticalFile, netID } = data;
 
         // Copy critical files

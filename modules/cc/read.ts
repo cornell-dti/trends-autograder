@@ -10,8 +10,6 @@ import { ERROR } from "../constants";
  */
 const readLogs = (netID: string) =>
     Effect.gen(function* ($) {
-        console.log(`Parsing logs for ${netID}...`);
-
         const logs = yield* $(
             Effect.either(bunReadFile(`tmp/${netID}/logs.json`))
         );

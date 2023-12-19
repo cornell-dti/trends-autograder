@@ -23,7 +23,7 @@ export const criticalFiles: {
 /**
  * No single effect should take longer than this.
  */
-export const maxTimeout = "50 seconds";
+export const maxTimeout = "30 seconds";
 
 /**
  * Message to write into cms.csv for students who we had trouble auto-grading.
