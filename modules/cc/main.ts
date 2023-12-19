@@ -17,6 +17,7 @@ const runMain =
         netIDs.map((netID) => makeFiber({ assignmentNum, criticalFile, netID })), 
         { concurrency: "unbounded" }
       ),
+      Effect.tap(() => console.log("Finished executing all fibers!")),
       Effect.flatMap((grades) => writeGrades(grades))
     );
 

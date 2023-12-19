@@ -5,6 +5,8 @@
 
 import { Effect } from "effect";
 import { tokenize } from "./fns";
+import { promiseWithTimeout } from "./fns";
+import { maxCmdTimeout } from "../constants";
 
 /**
  * Get the first element of an async iterable.
@@ -42,10 +44,19 @@ const exec = async (command: string[], params: BunSpawnParams) => {
     const proc = Bun.spawn(command, params);
 
     const { stdout, stderr, exited } = proc;
-    const consoleOutput = await new Response(stdout).text();
-    const consoleErrors = await new Response(stderr).text();
 
-    await proc.exited;
+    const consoleOutput = await promiseWithTimeout(
+        new Response(stdout).text(),
+        maxCmdTimeout,
+        () => proc.unref()
+    );
+    const consoleErrors = await promiseWithTimeout(
+        new Response(stderr).text(),
+        maxCmdTimeout,
+        () => proc.unref()
+    );
+
+    await promiseWithTimeout(proc.exited, maxCmdTimeout, () => proc.unref());
 
     return [consoleOutput, consoleErrors] as const;
 };
@@ -92,3 +103,18 @@ export const bunLs = (directory: string) =>
  */
 export const bunLog = (message: string) =>
     Effect.sync(() => process.stdout.write(message));
+
+/**
+ * Read a file.
+ */
+const read = async (path: string) => {
+    const file = await Bun.file(path);
+    return await file.text();
+};
+
+/**
+ * Read a file as an Effect.
+ * @param path A file path.
+ * @returns An Effect that resolves to the contents of the file.
+ */
+export const bunReadFile = (path: string) => Effect.promise(() => read(path));

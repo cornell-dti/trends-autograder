@@ -1,6 +1,5 @@
 import { Effect } from "effect";
-import { bunExec, bunWrite } from "../stdlib/bun-effect";
-import { nodeExec } from "../stdlib/node-effect";
+import { bunExec, bunReadFile, bunWrite } from "../stdlib/bun-effect";
 import parse from "../parser/parse";
 
 export type DataIn = {
@@ -18,23 +17,43 @@ const makeFiber = (data: DataIn) =>
     Effect.gen(function* ($) {
         const { assignmentNum, criticalFile, netID } = data;
 
-        // prettier-ignore
-        yield* $(bunExec(["cp", "-r", `solutions/${assignmentNum}/`, `tmp/${netID}`]));
-        // prettier-ignore
-        yield* $(bunExec(["cp", `Submissions/${netID}/${criticalFile}`, `tmp/${netID}/${criticalFile}`, ]));
-        // prettier-ignore
-        yield* $(bunExec(["pnpm", "install"], {
-            cwd: `tmp/${netID}`,
-        }));
+        console.log(`Starting worker for ${netID}...`);
 
-        console.log(`BEFORE...`);
+        // Copy critical files
 
-        const [stdout, stderr] = yield* $(
+        yield* $(
+            bunExec(["cp", "-r", `solutions/${assignmentNum}/`, `tmp/${netID}`])
+        );
+
+        yield* $(
+            bunExec([
+                "cp",
+                `Submissions/${netID}/${criticalFile}`,
+                `tmp/${netID}/${criticalFile}`,
+            ])
+        );
+
+        // Install dependencies
+
+        console.log(`Installing dependencies for ${netID}...`);
+
+        yield* $(
+            bunExec(["pnpm", "install"], {
+                cwd: `tmp/${netID}`,
+            })
+        );
+
+        console.log(`Running tests for ${netID}...`);
+
+        // Run tests, save logs
+
+        yield* $(
             bunExec(
                 [
                     "pnpm",
                     "test",
                     "--",
+                    "--run",
                     "--reporter=json",
                     "--outputFile=./logs.json",
                 ],
@@ -44,13 +63,19 @@ const makeFiber = (data: DataIn) =>
             )
         );
 
-        console.log(`AFTER...`);
+        // Parse logs, calculate grade
 
-        const logs = stdout + stderr;
+        console.log(`Parsing logs for ${netID}...`);
 
-        yield* $(bunWrite(`tmp/${netID}/logs.txt`, logs));
+        const logs = yield* $(bunReadFile(`tmp/${netID}/logs.json`));
+
+        console.log(`Calculating grade for ${netID}...`);
 
         const grade = yield* $(parse(logs));
+
+        console.log(`Grade for ${netID}: ${grade}`);
+
+        console.log(`Ending worker for ${netID}...`);
 
         return [netID, grade] as const;
     });
