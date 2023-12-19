@@ -26,7 +26,7 @@ const calculateGrade = (failed: number) => (succeeded: number) =>
  * @param str The string to match against.
  * @returns The substring of `str` that matches `regex`.
  */
-const getSubstring = (regex: RegExp, str: string) => {
+const getSubstring = (regex: RegExp) => (str: string) => {
     const match = str.match(regex);
     return Match.type<RegExpMatchArray | null>().pipe(
         Match.when(null, () => Effect.fail("No match")),
@@ -47,12 +47,16 @@ const parseSubstring = (str: string) =>
  * @returns A grade from 0 to 100, or -1 if the input is invalid.
  */
 const parse = (input: string) =>
-    Effect.gen(function* ($) {
-        const fstr = yield* $(getSubstring(failureRegex, input));
-        const sstr = yield* $(getSubstring(successRegex, input));
-        const f = yield* $(parseSubstring(fstr));
-        const s = yield* $(parseSubstring(sstr));
-        return yield* $(calculateGrade(f)(s));
-    });
+    pipe(
+        pipe(input, getSubstring(failureRegex), Effect.flatMap(parseSubstring)),
+        Effect.flatMap((f) =>
+            pipe(
+                input,
+                getSubstring(successRegex),
+                Effect.flatMap(parseSubstring),
+                Effect.flatMap((s) => calculateGrade(f)(s))
+            )
+        )
+    );
 
 export default parse;
