@@ -10,13 +10,11 @@ import { ERROR, TMP_DIR } from "../constants";
  */
 const readLogs = (netID: string) =>
     Effect.gen(function* ($) {
-        const logs = yield* $(
-            Effect.either(bunReadFile(`${TMP_DIR}/${netID}/logs.json`))
-        );
-
-        return Either.isLeft(logs)
-            ? ([netID, ERROR] as const)
-            : ([netID, "" + (yield* $(parse(logs.right)))] as const);
+        const val = pipe(
+            bunReadFile(`${TMP_DIR}/${netID}/logs.json`),
+            Effect.flatMap(parse)
+        ).pipe(Effect.catchAll((_) => Effect.succeed(`${ERROR}`)));
+        return [netID, `${val}`] as const;
     });
 
 export default readLogs;
