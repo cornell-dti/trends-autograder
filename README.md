@@ -39,7 +39,3 @@ Make sure tests are passing before using this program!
 7. To upload scores to CMS, go to the bottom of the CMS page next to _Upload Scores_ and choose file `cms.csv`. Note that this will potentially overwrite past uploads and should thus be done by DevLeads in the majority of cases.
 
 8. Afterwards, please run `make clean` to clean up.
-
-## Future Work
-
--   Add more tests.

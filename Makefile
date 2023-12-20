@@ -6,4 +6,4 @@ clean:
 	rm cms.csv
 
 test:
-	bun test modules --watch
+	bun test modules --watch --coverage
