@@ -1,5 +1,6 @@
 import { Effect, Match } from "effect";
 import { bunLog, bunReadLine } from "../stdlib/bun-effect";
+import { InvalidAssignmentError, NoInputError } from "../errors";
 
 /**
  * Prompts the user for an assignment number and returns it.
@@ -11,7 +12,7 @@ const promptAssignmentNumber = () =>
         const line = yield* $(bunReadLine());
         return yield* $(
             Match.value(line).pipe(
-                Match.when(undefined, () => Effect.fail("No input")),
+                Match.when(undefined, () => Effect.fail(new NoInputError())),
                 Match.orElse((line) =>
                     Match.value(parseInt(line)).pipe(
                         Match.when(
@@ -21,7 +22,7 @@ const promptAssignmentNumber = () =>
                                 Effect.succeed(assignmentNumber)
                         ),
                         Match.orElse(() =>
-                            Effect.fail("Invalid assignment number")
+                            Effect.fail(new InvalidAssignmentError())
                         )
                     )
                 )

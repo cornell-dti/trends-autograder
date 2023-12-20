@@ -1,7 +1,7 @@
 import { Effect, pipe } from "effect";
 import { writeGrades } from "../fsio/writeout";
 import writeLogs from "./write";
-import { maxTimeout } from "../constants";
+import { TMP_DIR, maxTimeout } from "../constants";
 import readLogs from "./read";
 import init from "../fsio/init";
 
@@ -26,7 +26,9 @@ const runMain = () =>
 
         Effect.flatMap(([netIDs, ..._]) =>
             Effect.all(
-                netIDs.map((netID) => readLogs(netID)),
+                netIDs.map((netID) =>
+                    readLogs(netID, `${TMP_DIR}/${netID}/logs.json`)
+                ),
                 { concurrency: "unbounded" }
             )
         ),

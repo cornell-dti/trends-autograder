@@ -5,6 +5,7 @@
 
 import { Effect, Match, pipe } from "effect";
 import { ZodError, z } from "zod";
+import { JsonParseError } from "../errors";
 
 const JsonStrToObj =
     <T>(schema: z.ZodSchema<T>) =>
@@ -19,7 +20,7 @@ const JsonStrToObj =
                     Effect.succeed(data)
                 ),
                 Match.when({ success: false }, ({ error }) =>
-                    Effect.fail(error)
+                    Effect.fail(new JsonParseError(error))
                 ),
                 Match.exhaustive
             )
