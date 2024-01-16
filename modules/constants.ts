@@ -23,7 +23,12 @@ export const criticalFilePaths: {
 /**
  * No single effect should take longer than this.
  */
-export const maxTimeout = "30 seconds";
+export const maxTimeout = "3 minutes";
+
+/**
+ * Do not allow more than this many effects to run concurrently.
+ */
+export const maxConcurrency = 10;
 
 /**
  * Message to write into cms.csv for students who we had trouble auto-grading.

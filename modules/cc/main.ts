@@ -1,7 +1,7 @@
 import { Effect, pipe } from "effect";
 import { writeGrades } from "../fsio/writeout";
 import writeLogs from "./write";
-import { TMP_DIR, maxTimeout } from "../constants";
+import { TMP_DIR, maxConcurrency, maxTimeout } from "../constants";
 import readLogs from "./read";
 import init from "../fsio/init";
 
@@ -20,7 +20,7 @@ const runMain = () =>
                 netIDs.map((netID) =>
                     writeLogs({ assignmentNum, criticalFile, netID })
                 ),
-                { concurrency: "unbounded" }
+                { concurrency: maxConcurrency }
             ).pipe(Effect.timeout(maxTimeout))
         ),
 
@@ -29,7 +29,7 @@ const runMain = () =>
                 netIDs.map((netID) =>
                     readLogs(netID, `${TMP_DIR}/${netID}/logs.json`)
                 ),
-                { concurrency: "unbounded" }
+                { concurrency: maxConcurrency }
             )
         ),
 
