@@ -9,9 +9,9 @@ export const assignments: [string, string, string, string] = [
 ];
 
 /**
- * The files that are critical to each assignment.
+ * The file paths that are critical to each assignment.
  */
-export const criticalFiles: {
+export const criticalFilePaths: {
     [key: string]: string;
 } = {
     A1: "main.js",
@@ -27,6 +27,7 @@ export const maxTimeout = "30 seconds";
 
 /**
  * Message to write into cms.csv for students who we had trouble auto-grading.
+ * i.e. if their code has such a serious issue it doesn't even compile.
  * Indicates you should hand-grade those students.
  */
 export const ERROR = "ERROR";

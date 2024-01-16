@@ -10,3 +10,9 @@
  */
 export const tokenize = (input: string): string[] =>
     input.split(/\s+/).filter((token) => token.length > 0);
+
+/**
+ * Get the file name from the file path.
+ */
+export const getFileName = (filePath: string): string =>
+    filePath.split("/").pop()!;

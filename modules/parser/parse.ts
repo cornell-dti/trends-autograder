@@ -19,6 +19,7 @@ export type TestObj = z.infer<typeof TestObjSchema>;
 
 /**
  * Given a TestObj, calculate the grade.
+ * TODO: handle NaN with an Effect fail -- let it propagate up to get caught.
  */
 const calcGrade = (obj: TestObj) =>
     Effect.succeed(Math.round(100 * (obj.numPassedTests / obj.numTotalTests)));

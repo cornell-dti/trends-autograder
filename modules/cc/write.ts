@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { bunExec } from "../stdlib/bun-effect";
 import { SOLUTIONS_DIR, SUBMISSIONS_DIR, TMP_DIR } from "../constants";
+import { getFileName } from "../stdlib/fns";
 
 type DataIn = {
     assignmentNum: string;
@@ -17,7 +18,7 @@ const writeLogs = (data: DataIn) =>
     Effect.gen(function* ($) {
         const { assignmentNum, criticalFile, netID } = data;
 
-        // Copy critical files
+        // Copy solution templates into temp
 
         yield* $(
             bunExec([
@@ -28,10 +29,12 @@ const writeLogs = (data: DataIn) =>
             ])
         );
 
+        // Copy student submission into correct spot in solution template in temp
+
         yield* $(
             bunExec([
                 "cp",
-                `${SUBMISSIONS_DIR}/${netID}/${criticalFile}`,
+                `${SUBMISSIONS_DIR}/${netID}/${getFileName(criticalFile)}`,
                 `${TMP_DIR}/${netID}/${criticalFile}`,
             ])
         );
