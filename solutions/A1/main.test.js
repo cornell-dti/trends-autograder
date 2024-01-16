@@ -6,6 +6,7 @@ import {
     findDuplicates,
     highestProfitOpportunity,
     isPalindrome,
+    transposeMatrix,
     isPrime,
     fibonacci,
 } from "./main";
