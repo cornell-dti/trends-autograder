@@ -1,160 +1,153 @@
 import { expect, test } from "vitest";
-import {
-    transformProducts,
-    aggregateOrders,
-    analyzeMovies,
-    describeFinance,
-    constructSentence,
-    categorizeStudents,
-    handleNestedObject,
-} from "./main.ts";
+import { 
+    formatLibraryCatalog, 
+    summarizePurchases, 
+    filterHighQualityArticles, 
+    assessFinancialStanding, 
+    craftGreetingMessage, 
+    organizeCourses, 
+    safelyAccessDeepProperty 
+} from './main';
 
 // Exercise 1 Tests
-test("transformProducts should handle empty array", () => {
-    expect(transformProducts([])).toEqual([]);
+test('formatLibraryCatalog should handle empty array', () => {
+ expect(formatLibraryCatalog([])).toEqual([]);
 });
 
-test("transformProducts should transform and filter products", () => {
-    expect(
-        transformProducts([
-            { name: "laptop", price: 1000, category: "electronics" },
-            { name: "shirt", price: 20, category: "clothing" },
-        ])
-    ).toEqual([{ name: "LAPTOP", price: 1100, category: "electronics" }]);
+test('formatLibraryCatalog should transform and filter books', () => {
+ expect(
+   formatLibraryCatalog([
+     { title: 'Book 1', author: 'Author A', genre: 'fiction' },
+     { title: 'Book 2', author: 'Author B', genre: 'non-fiction' },
+     { title: 'Book 3', author: 'Author C', genre: 'fiction' },
+   ])
+ ).toEqual([
+   { title: '"Book 1"', author: 'author a', genre: 'fiction' },
+   { title: '"Book 3"', author: 'author c', genre: 'fiction' },
+ ]);
 });
 
-test("transformProducts should handle products with all the same category", () => {
-    expect(
-        transformProducts([
-            { name: "phone", price: 500, category: "electronics" },
-            { name: "tablet", price: 300, category: "electronics" },
-        ])
-    ).toEqual([
-        { name: "PHONE", price: 550, category: "electronics" },
-        { name: "TABLET", price: 330, category: "electronics" },
-    ]);
+test('formatLibraryCatalog should handle books with all the same genre', () => {
+ expect(
+   formatLibraryCatalog([
+     { title: 'Book 1', author: 'Author A', genre: 'fiction' },
+     { title: 'Book 2', author: 'Author B', genre: 'fiction' },
+   ])
+ ).toEqual([
+   { title: '"Book 1"', author: 'author a', genre: 'fiction' },
+   { title: '"Book 2"', author: 'author b', genre: 'fiction' },
+ ]);
 });
 
 // Exercise 2 Tests
-test("aggregateOrders should handle empty array", () => {
-    expect(aggregateOrders([])).toEqual({});
+test('summarizePurchases should handle empty array', () => {
+ expect(summarizePurchases([])).toEqual({});
 });
 
-test("aggregateOrders should aggregate orders by customerId", () => {
-    expect(
-        aggregateOrders([
-            { id: 1, customerId: 123, amount: 100 },
-            { id: 2, customerId: 123, amount: 50 },
-            { id: 3, customerId: 456, amount: 200 },
-        ])
-    ).toEqual({ "123": 150, "456": 200 });
+test('summarizePurchases should aggregate purchases by userId', () => {
+ expect(
+   summarizePurchases([
+     { purchaseId: 1, userId: 123, total: 100 },
+     { purchaseId: 2, userId: 123, total: 50 },
+     { purchaseId: 3, userId: 456, total: 200 },
+   ])
+ ).toEqual({ '123': 150, '456': 200 });
 });
 
-test("aggregateOrders should handle orders with all the same customerId", () => {
-    expect(
-        aggregateOrders([
-            { id: 1, customerId: 123, amount: 100 },
-            { id: 2, customerId: 123, amount: 100 },
-            { id: 3, customerId: 123, amount: 100 },
-        ])
-    ).toEqual({ "123": 300 });
+test('summarizePurchases should handle purchases with all the same userId', () => {
+ expect(
+   summarizePurchases([
+     { purchaseId: 1, userId: 123, total: 100 },
+     { purchaseId: 2, userId: 123, total: 100 },
+     { purchaseId: 3, userId: 123, total: 100 },
+   ])
+ ).toEqual({ '123': 300 });
 });
 
 // Exercise 3 Tests
-test("analyzeMovies should handle empty array", () => {
-    expect(analyzeMovies([])).toEqual([]);
+test('filterHighQualityArticles should handle empty array', () => {
+ expect(filterHighQualityArticles([])).toEqual([]);
 });
 
-test("analyzeMovies should filter and format movies", () => {
-    expect(
-        analyzeMovies([
-            { title: "Inception", genre: "Action", rating: 9 },
-            { title: "Toy Story", genre: "Animation", rating: 8.5 },
-            { title: "The Room", genre: "Drama", rating: 3 },
-        ])
-    ).toEqual(["Inception (Action)", "Toy Story (Animation)"]);
+test('filterHighQualityArticles should filter and format articles', () => {
+ expect(
+   filterHighQualityArticles([
+     { title: 'Article 1', topic: 'Technology', score: 7 },
+     { title: 'Article 2', topic: 'Science', score: 4 },
+     { title: 'Article 3', topic: 'Politics', score: 6 },
+   ])
+ ).toEqual(['Article 1: Technology', 'Article 3: Politics']);
 });
 
-test("analyzeMovies should handle movies with all low ratings", () => {
-    expect(
-        analyzeMovies([
-            { title: "Movie1", genre: "Action", rating: 5 },
-            { title: "Movie2", genre: "Drama", rating: 4 },
-        ])
-    ).toEqual([]);
+test('filterHighQualityArticles should handle articles with all low scores', () => {
+ expect(
+   filterHighQualityArticles([
+     { title: 'Article 1', topic: 'Technology', score: 4 },
+     { title: 'Article 2', topic: 'Science', score: 3 },
+   ])
+ ).toEqual([]);
 });
 
 // Exercise 4 Tests
-test("describeFinance should handle wealthy", () => {
-    expect(describeFinance({ name: "John", age: 30, balance: 20000 })).toEqual(
-        "wealthy"
-    );
+test('assessFinancialStanding should handle wealthy case', () => {
+ expect(assessFinancialStanding({ name: 'John', monthlyIncome: 10000, expenses: 2000 })).toEqual('wealthy');
 });
 
-test("describeFinance should handle moderate", () => {
-    expect(describeFinance({ name: "Mary", age: 25, balance: 5000 })).toEqual(
-        "moderate"
-    );
+test('assessFinancialStanding should handle stable case', () => {
+ expect(assessFinancialStanding({ name: 'Jane', monthlyIncome: 4000, expenses: 2000 })).toEqual('stable');
 });
 
-test("describeFinance should handle poor", () => {
-    expect(describeFinance({ name: "James", age: 40, balance: 500 })).toEqual(
-        "poor"
-    );
+test('assessFinancialStanding should handle struggling case', () => {
+ expect(assessFinancialStanding({ name: 'Bob', monthlyIncome: 2000, expenses: 3000 })).toEqual('struggling');
 });
 
 // Exercise 5 Tests
-test("constructSentence should construct the sentence correctly", () => {
-    expect(constructSentence({ name: "Alice", age: 25 })).toEqual(
-        "Hello, my name is Alice and I'm 25 years old."
-    );
+test('craftGreetingMessage should construct the message correctly', () => {
+ const currentYear = new Date().getFullYear();
+ expect(craftGreetingMessage({ firstName: 'John', birthYear: 1990 })).toEqual(`Welcome, John! Your age is ${currentYear - 1990}.`);
 });
 
-// Edge case
-test("constructSentence should handle special characters in the name", () => {
-    expect(constructSentence({ name: "A&lice", age: 25 })).toEqual(
-        "Hello, my name is A&lice and I'm 25 years old."
-    );
+test('craftGreetingMessage should handle edge case of current year', () => {
+ const currentYear = new Date().getFullYear();
+ expect(craftGreetingMessage({ firstName: 'Jane', birthYear: currentYear })).toEqual(`Welcome, Jane! Your age is 0.`);
 });
 
 // Exercise 6 Tests
-test("categorizeStudents should categorize students correctly", () => {
-    expect(
-        categorizeStudents([
-            { name: "Student1", grade: 95 },
-            { name: "Student2", grade: 85 },
-            { name: "Student3", grade: 75 },
-            { name: "Student4", grade: 65 },
-            { name: "Student5", grade: 55 },
-        ])
-    ).toEqual({
-        A: [{ name: "Student1", grade: 95 }],
-        B: [{ name: "Student2", grade: 85 }],
-        C: [{ name: "Student3", grade: 75 }],
-        D: [{ name: "Student4", grade: 65 }],
-        F: [{ name: "Student5", grade: 55 }],
-    });
+test('organizeCourses should categorize courses correctly', () => {
+ expect(
+   organizeCourses([
+     { courseName: 'Course 1', difficulty: 'easy' },
+     { courseName: 'Course 2', difficulty: 'medium' },
+     { courseName: 'Course 3', difficulty: 'hard' },
+     { courseName: 'Course 4', difficulty: 'easy' },
+   ])
+ ).toEqual({
+   easy: [
+     { courseName: 'Course 1', difficulty: 'easy' },
+     { courseName: 'Course 4', difficulty: 'easy' },
+   ],
+   medium: [{ courseName: 'Course 2', difficulty: 'medium' }],
+   hard: [{ courseName: 'Course 3', difficulty: 'hard' }],
+ });
 });
 
-test("categorizeStudents should handle empty array", () => {
-    expect(categorizeStudents([])).toEqual({});
+test('organizeCourses should handle empty array', () => {
+ expect(organizeCourses([])).toEqual({});
 });
 
 // Exercise 7 Tests
-test("handleNestedObject should return the nested value", () => {
-    expect(
-        handleNestedObject({
-            level1: { level2: { level3: { value: "Success" } } },
-        })
-    ).toEqual("Success");
+test('safelyAccessDeepProperty should return the nested value', () => {
+ expect(
+   safelyAccessDeepProperty({
+     firstLevel: { secondLevel: { thirdLevel: { deepValue: 'Success' } } },
+   })
+ ).toEqual('Success');
 });
 
-test('handleNestedObject should return "Not available" if value is missing', () => {
-    expect(handleNestedObject({ level1: { level2: { level3: {} } } })).toEqual(
-        "Not available"
-    );
+test('safelyAccessDeepProperty should return "Unavailable" if value is missing', () => {
+ expect(safelyAccessDeepProperty({ firstLevel: { secondLevel: { thirdLevel: {} } } })).toEqual('Unavailable');
 });
 
-test("handleNestedObject should handle completely empty object", () => {
-    expect(handleNestedObject({})).toEqual("Not available");
+test('safelyAccessDeepProperty should handle completely empty object', () => {
+ expect(safelyAccessDeepProperty({})).toEqual('Unavailable');
 });

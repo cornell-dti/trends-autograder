@@ -15,9 +15,9 @@ export const criticalFiles: {
     [key: string]: string;
 } = {
     A1: "main.js",
-    A2: "src/main.ts",
-    A3: "src/Paginator.tsx",
-    A4: "src/components/Gallery.tsx",
+    A2: "main.ts",
+    A3: "Paginator.tsx",
+    A4: "Gallery.tsx",
 };
 
 /**
