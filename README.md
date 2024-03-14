@@ -36,6 +36,8 @@ Make sure tests are passing before using this program!
 
     - If the system hangs after printing `Done!`, it's safe to hit Ctrl+C to kill the process.
 
-7. To upload scores to CMS, go to the bottom of the CMS page next to _Upload Scores_ and choose file `cms.csv`. Note that this will potentially overwrite past uploads and should thus be done by DevLeads in the majority of cases.
+7. Upload score in `cms.csv` to corresponding student. If student does not achieve full points, refer to `tmp/netid/logs.json` to investigate all test cases having `"status": "failed"` and provide constructive feedback in the comment section.
 
 8. Afterwards, please run `make clean` to clean up.
+
+[Dev Lead Only] To upload scores to CMS, go to the bottom of the CMS page next to _Upload Scores_ and choose file `cms.csv`. Note that this will potentially overwrite past uploads and should thus be done by DevLeads in the majority of cases.
