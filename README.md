@@ -6,6 +6,8 @@ Written in a functional style, using [Effect](https://effect.website/), to handl
 
 ## Initial Setup
 
+`git clone` this repo into some folder on your system, then `cd` into it.
+
 Install [Bun](https://bun.sh/).
 
 Then, run `bun install` to install dependencies.
