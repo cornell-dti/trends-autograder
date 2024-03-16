@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import promptAssignmentNumber from "./prompt";
-import { SUBMISSIONS_DIR, criticalFiles } from "../constants";
+import { SUBMISSIONS_DIR, criticalFilePaths } from "../constants";
 import { bunLs } from "../stdlib/bun-effect";
 import createTmpDirAndCsvFile from "./tmpcsv";
 
@@ -13,12 +13,12 @@ const init = (_: unknown) =>
         const num = yield* $(promptAssignmentNumber());
 
         const assignmentNumber = `A${num}`;
-        const criticalFile = criticalFiles[assignmentNumber];
+        const criticalFilePath = criticalFilePaths[assignmentNumber];
         const netIDs = yield* $(bunLs(SUBMISSIONS_DIR));
 
         yield* $(createTmpDirAndCsvFile(assignmentNumber));
 
-        return [netIDs, assignmentNumber, criticalFile] as const;
+        return [netIDs, assignmentNumber, criticalFilePath] as const;
     });
 
 export default init;

@@ -22,6 +22,8 @@ Make sure tests are passing before using this program!
 
 ## How to Use
 
+0. Run `make clean`.
+
 1. On CMS go to _Assignments > Groups > [Name of Assignment: either A1, A2, A3, or A4]_.
 
 2. Sort by _Files Remaining_ and find the index of the last assignment with 0 remaining.
@@ -30,7 +32,7 @@ Make sure tests are passing before using this program!
 
 4. Under _Select Group Operations_ click _Files_.
 
-5. Unzip `submissions.zip` and move the resulting `Submissions` directory into here.
+5. Unzip `submissions.zip` and copy the resulting `Submissions` directory into here (the root directory).
 
 6. Run `make`. If all goes well, Trends-Autograder will produce `cms.csv` in root.
 
