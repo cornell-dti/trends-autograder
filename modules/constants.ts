@@ -26,12 +26,6 @@ export const criticalFiles: {
 export const maxTimeout = "30 seconds";
 
 /**
- * Message to write into cms.csv for students who we had trouble auto-grading.
- * Indicates you should hand-grade those students.
- */
-export const ERROR = "ERROR";
-
-/**
  * Output file name (should end in .csv)
  */
 export const OUTPUT_FILE = "cms.csv";
@@ -50,3 +44,8 @@ export const SOLUTIONS_DIR = "solutions";
  * The directory where the temporary build files are stored.
  */
 export const TMP_DIR = "tmp";
+
+/**
+ * Default grade, comment tuple for students who we had trouble auto-grading.
+ */
+export const DEFAULT_ENTRY: [string, string] = ["", ""];
