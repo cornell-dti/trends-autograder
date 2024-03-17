@@ -1,7 +1,7 @@
 import { Effect, pipe } from "effect";
-import { writeGrades } from "../fsio/writeout";
+import { GradebookEntry, writeGrades } from "../fsio/writeout";
 import writeLogs from "./write";
-import { TMP_DIR, maxTimeout } from "../constants";
+import { TMP_DIR, maxConcurrency, maxTimeout } from "../constants";
 import readLogs from "./read";
 import init from "../fsio/init";
 
@@ -20,20 +20,37 @@ const runMain = () =>
                 netIDs.map((netID) =>
                     writeLogs({ assignmentNum, criticalFile, netID })
                 ),
-                { concurrency: "unbounded" }
+                { concurrency: maxConcurrency }
             ).pipe(Effect.timeout(maxTimeout))
         ),
 
-        Effect.flatMap(([netIDs, ..._]) =>
-            Effect.all(
-                netIDs.map((netID) =>
-                    readLogs(netID, `${TMP_DIR}/${netID}/logs.json`)
-                ),
-                { concurrency: "unbounded" }
-            )
+        Effect.flatMap(([netIDs, assignmentNum, _]) =>
+            Effect.gen(function* ($) {
+                const a = yield* $(
+                    Effect.all(
+                        netIDs
+                            .map((netID) =>
+                                readLogs(
+                                    netID,
+                                    `${TMP_DIR}/${netID}/logs.json`
+                                ).pipe(
+                                    Effect.catchAll((_) => Effect.succeed(null))
+                                )
+                            )
+                            .filter((e) => e !== null),
+                        { concurrency: maxConcurrency }
+                    )
+                );
+
+                const b = assignmentNum;
+
+                return [a, b] as const;
+            })
         ),
 
-        Effect.flatMap((grades) => writeGrades(grades)),
+        Effect.flatMap(([grades, assignmentNum]) =>
+            writeGrades(grades as GradebookEntry[], assignmentNum)
+        ),
 
         Effect.tap(() => console.log("✅ Done!"))
     );
