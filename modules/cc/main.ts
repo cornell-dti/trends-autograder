@@ -42,9 +42,7 @@ const runMain = () =>
                     )
                 );
 
-                const b = yield* $(
-                    Effect.succeed(parseInt(assignmentNum.substring(1)))
-                );
+                const b = assignmentNum;
 
                 return [a, b] as const;
             })

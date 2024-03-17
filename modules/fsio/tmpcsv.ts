@@ -7,13 +7,13 @@ import { OUTPUT_FILE, TMP_DIR } from "../constants";
  * @param assignmentNumber The assignment number.
  * @returns An Effect that resolves once the tmp directory and cms.csv file have been created.
  */
-const createTmpDirAndCsvFile = (assignmentNumber: string) =>
+const createTmpDirAndCsvFile = (assignmentNumber: number) =>
     Effect.gen(function* ($) {
         yield* $(bunExec(["mkdir", TMP_DIR]));
         yield* $(
             bunWrite(
                 OUTPUT_FILE,
-                `NetID,${assignmentNumber},Total,Adjustments,Add Comments`
+                `NetID,Assignment ${assignmentNumber},Total,Adjustments,Add Comments`
             )
         );
     });

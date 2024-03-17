@@ -12,13 +12,12 @@ const init = (_: unknown) =>
     Effect.gen(function* ($) {
         const num = yield* $(promptAssignmentNumber());
 
-        const assignmentNumber = `A${num}`;
-        const criticalFilePath = criticalFilePaths[assignmentNumber];
+        const criticalFilePath = criticalFilePaths[num];
         const netIDs = yield* $(bunLs(SUBMISSIONS_DIR));
 
-        yield* $(createTmpDirAndCsvFile(assignmentNumber));
+        yield* $(createTmpDirAndCsvFile(num));
 
-        return [netIDs, assignmentNumber, criticalFilePath] as const;
+        return [netIDs, num, criticalFilePath] as const;
     });
 
 export default init;

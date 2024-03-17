@@ -66,6 +66,11 @@ const generateComment = (obj: TestObj) =>
                   .join(" | ")
     );
 
+/**
+ * Generates a [string, string] tuple mapping a grade to a comment for a given TestObj.
+ * @param obj The TestObj to use.
+ * @returns An Effect that resolves to a [string, string] tuple.
+ */
 const createEntry = (obj: TestObj) =>
     Effect.gen(function* ($) {
         const grade = yield* $(generateGrade(obj));
@@ -76,7 +81,7 @@ const createEntry = (obj: TestObj) =>
 /**
  * Given a JSON string, parse it into a TestObj, and return a gradebook entry.
  * @param json The JSON string to parse.
- * @returns The grade, between 0 and 100.
+ * @returns An Effect that resolves to a [string, string] mapping each grade to a comment explaining it.
  */
 const parse = (json: string) =>
     pipe(json, JsonStrToObj(TestObjSchema), Effect.flatMap(createEntry));

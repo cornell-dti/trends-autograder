@@ -1,23 +1,13 @@
 /**
- * The assignments that are available.
- */
-export const assignments: [string, string, string, string] = [
-    "A1",
-    "A2",
-    "A3",
-    "A4",
-];
-
-/**
  * The file paths that are critical to each assignment.
  */
 export const criticalFilePaths: {
-    [key: string]: string;
+    [key: number]: string;
 } = {
-    A1: "main.js",
-    A2: "main.ts",
-    A3: "Paginator.tsx",
-    A4: "Gallery.tsx",
+    1: "main.js",
+    2: "src/main.ts",
+    3: "src/Paginator.tsx",
+    4: "src/components/Gallery.tsx",
 };
 
 /**

@@ -4,7 +4,7 @@ import { SOLUTIONS_DIR, SUBMISSIONS_DIR, TMP_DIR } from "../constants";
 import { getFileName } from "../stdlib/fns";
 
 type DataIn = {
-    assignmentNum: string;
+    assignmentNum: number;
     criticalFile: string;
     netID: string;
 };
@@ -12,7 +12,7 @@ type DataIn = {
 /**
  * Constructs a single fiber that runs the tests for a single student and writes the logs to a file.
  * @param data The data to use for the fiber.
- * @returns An Effect that resolves to a tuple of the netID and grade.
+ * @returns An Effect that resolves once the logs have been written.
  */
 const writeLogs = (data: DataIn) =>
     Effect.gen(function* ($) {
@@ -24,7 +24,7 @@ const writeLogs = (data: DataIn) =>
             bunExec([
                 "cp",
                 "-r",
-                `${SOLUTIONS_DIR}/${assignmentNum}/`,
+                `${SOLUTIONS_DIR}/A${assignmentNum}/`,
                 `${TMP_DIR}/${netID}`,
             ])
         );

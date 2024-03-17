@@ -24,7 +24,7 @@ Make sure tests are passing before using this program!
 
 0. Run `make clean`.
 
-1. On CMS go to _Assignments > Groups > [Name of Assignment: either A1, A2, A3, or A4]_.
+1. On CMS go to _Assignments > Groups > [Name of Assignment: either Assignment 1, Assignment 2, Assignment 3, or Assignment 4]_.
 
 2. Sort by _Files Remaining_ and find the index of the last assignment with 0 remaining.
 
@@ -36,7 +36,7 @@ Make sure tests are passing before using this program!
 
 6. Run `make`. If all goes well, Trends-Autograder will produce `cms.csv` in root.
 
-    - If the system had trouble automatically grading any student, it will produce an "ERROR" in the `cms.csv` file next to their name. You will need to manually grade these students.
+    - If the system had trouble automatically grading any student, it will simply skip over that student. You will need to manually grade these students.
 
     - If the system hangs after printing `Done!`, it's safe to hit Ctrl+C to kill the process.
 
@@ -44,4 +44,4 @@ Make sure tests are passing before using this program!
 
 8. Afterwards, please run `make clean` to clean up.
 
-[Dev Lead Only] To upload scores to CMS, go to the bottom of the CMS page next to _Upload Scores_ and choose file `cms.csv`. Note that this will potentially overwrite past uploads and should thus be done by DevLeads in the majority of cases.
+[Dev Lead Only] To upload scores to CMS, go to the bottom of the CMS page next to _Upload Scores_ and choose file `cms.csv`. Note that this will potentially overwrite past uploads and should thus be done by DevLeads in the majority of cases. You should also probably check the checkbox indicating `Remove existing comments (erases every comment for the group)`.

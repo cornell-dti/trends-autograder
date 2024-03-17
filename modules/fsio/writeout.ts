@@ -21,7 +21,7 @@ const write = async (grades: Gradebook, assignmentNum: number) =>
 
 /**
  * Writes the grades to a CSV file.
- * @param grades An object mapping netIDs to grades.
+ * @param grades A Gradebook.
  * @returns An Effect that resolves once the grades have been written to a CSV file.
  */
 export const writeGrades = (grades: Gradebook, assignmentNum: number) =>
